@@ -5,7 +5,7 @@ export type ScoringCategory =
 
 type ScoringSection = "Upper" | "Lower";
 
-interface ScoringCategoryDetails {
+export interface ScoringCategoryDetails {
     category: ScoringCategory;
     name: string;
     section: ScoringSection;

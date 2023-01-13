@@ -2,10 +2,10 @@ import { Client } from "boardgame.io/react";
 import { Yacht } from "./Game";
 import { YachtBoard } from "./components/YachtBoard";
 
-// TODO: multiplay
+// TODO: Server
 const App = Client({
   game: Yacht,
-  numPlayers: 1,
+  numPlayers: 2,
   board: YachtBoard
 });
 

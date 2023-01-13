@@ -28,12 +28,11 @@ const createInitialScores = () => {
 
 const rollDice: Move<GameState> = ({G, random}) => {
     if (G.nRoll >= MAX_ROLL) return;// INVALID_MOVE;
+    G.nRoll++;
 
     for (let d = 0; d < G.dice.length; d++) {
         if (!G.diceHeld[d]) G.dice[d] = random.Die(6);
     }
-
-    G.nRoll++;
 };
 
 const toggleDice: Move<GameState> = ({G}, dieIdx: number) => {
@@ -47,13 +46,8 @@ const selectCategory: Move<GameState> = ({G, ctx, events}, category: ScoringCate
     const score = ScoreCalculator.calculators[category](G.dice);
     G.players[parseInt(ctx.currentPlayer)].scoring[category] = score;
 
-    G.dice = Array(NUM_DICE).fill(null);
-    G.diceHeld = Array(NUM_DICE).fill(false);
-    G.nRoll = 0;
-    
     events.endTurn();
 };
-
 
 export const Yacht: Game<GameState> = {
     name: 'Yacht',
@@ -78,19 +72,13 @@ export const Yacht: Game<GameState> = {
             players,
         });
     },
+
     turn: {
-        onBegin: ({events}) => {
-            events.setActivePlayers({
-                currentPlayer: "roll",
-                others: Stage.NULL,
-                maxMoves: 1,
-            });
+        onBegin: ({G, events}) => {
+            G.dice = Array(NUM_DICE).fill(null);
+            G.diceHeld = Array(NUM_DICE).fill(false);
+            G.nRoll = 0;
             // G.dice = random.D6(NUM_DICE);
-        },
-        stages: {
-            roll: {
-                moves: { rollDice },
-            },
         },
     },
     moves: {
@@ -98,5 +86,22 @@ export const Yacht: Game<GameState> = {
         toggleDice,
         selectCategory,
     },
-    // TODO: endIf
+    endIf: ({G}) => {
+        const gameOver = G.players.every((player) => {
+            return Object.keys(player.scoring).every((category) => {
+                const ScoringCategory = category as ScoringCategory;
+                return player.scoring[ScoringCategory] != null;
+            })
+        });
+        if (gameOver) {
+            const scores = G.players.map((player) => ScoreCalculator.calculateTotal(player));
+            const maxScore = Math.max(...scores) ?? 0;
+            if (scores.filter((score) => score === maxScore).length > 1)
+                return { draw: true };
+            else {
+                const winner = G.players[scores.indexOf(maxScore)];
+                return { winner: winner.id };
+            }
+        }
+    },
 };
