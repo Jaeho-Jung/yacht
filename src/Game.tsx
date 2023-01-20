@@ -7,7 +7,6 @@ import { Player } from './types/Player';
 import { GameState } from './types/GameState';
 import { ScoringCategory } from './types/Scoring';
 import { ScoreCalculator } from './utils/ScoreCalculator';
-import { Stage } from 'boardgame.io/core';
 
 const createInitialScores = () => {
     return {
@@ -72,9 +71,8 @@ export const Yacht: Game<GameState> = {
             players,
         });
     },
-
     turn: {
-        onBegin: ({G, events}) => {
+        onBegin: ({G}) => {
             G.dice = Array(NUM_DICE).fill(null);
             G.diceHeld = Array(NUM_DICE).fill(false);
             G.nRoll = 0;

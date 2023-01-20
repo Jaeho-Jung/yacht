@@ -79,7 +79,6 @@ export const ScoreBoard = ({currentPlayer, dice, players, selectCategory, nRoll}
                     {upperSection}
                     <tr>{upperSectionTotal}</tr>
                     <tr>{bonus}</tr>
-                    <p/>
                     {lowerSection}    
                     <tr>{totalScores}</tr>
                 </tbody>
